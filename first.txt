@@ -1,0 +1,33 @@
+#include <stdio.h>
+#include <locale.h>
+    int main() {
+        setlocale(LC_ALL, "Russian");
+        int n = 10;
+        int a[10], i, max, min;
+        // Ввод элементов массива
+        printf("Введите 10 элементов массива:\n");
+        for (i = 0; i < n; i++) {
+            scanf_s("%d", &a[i]);
+        }
+        printf("Введённый массив:\n");
+        for (i = 0; i < n; i++) {
+            printf("%d ", a[i]);
+        }
+        printf("\n");
+        // Инициализация max и min первым элементом массива
+        max = min = a[0];
+        // Поиск максимального и минимального элементов
+        for (i = 1; i < n; i++) {
+            if (a[i] > max) {
+                max = a[i];
+            }
+            if (a[i] < min) {
+                min = a[i];
+            }
+        }
+        // Вычисление разницы
+        int raznica = max - min;
+        // Вывод результата
+        printf("Разница между максимальным и минимальным элементами: %d\n", raznica);
+        return 0;
+    }
