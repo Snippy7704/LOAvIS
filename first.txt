@@ -48,28 +48,70 @@
 //    printf("\n");
 //    return 0;
 //}
+//int main() {
+//    setlocale(LC_ALL, "Russian");
+//    int* a;
+//    int n, i;
+//    // Ввод размера массива
+//    printf("Введите размер массива: ");
+//    scanf_s("%d", &n);
+//    // Выделение памяти для массива
+//    a = (int*)malloc(n * sizeof(int));
+//    if (a == NULL) {
+//        printf("Ошибка выделения памяти!\n");
+//        return 1;
+//    }
+//    printf("Введите элементы массива:\n", n);
+//    for (i = 0; i < n; i++) {
+//        scanf_s("%d", &a[i]);
+//    }
+//    printf("Введённый массив:\n");
+//    for (i = 0; i < n; i++) {
+//        printf("%d ", a[i]);
+//    }
+//    printf("\n");
+//    free(a);
+//    return 0;
+//}
 int main() {
     setlocale(LC_ALL, "Russian");
-    int* a;
-    int n, i;
-    // Ввод размера массива
-    printf("Введите размер массива: ");
-    scanf_s("%d", &n);
-    // Выделение памяти для массива
-    a = (int*)malloc(n * sizeof(int));
-    if (a == NULL) {
-        printf("Ошибка выделения памяти!\n");
-        return 1;
+    int stroka, stolb, i, j;
+    printf("Введите количество строк: ");
+    scanf_s("%d", &stroka);
+    printf("Введите количество столбцов: ");
+    scanf_s("%d", &stolb);
+    int** a = (int**)malloc(stroka * sizeof(int*));
+    for (i = 0; i < stroka; i++) {
+        a[i] = (int*)malloc(stolb * sizeof(int));
     }
-    printf("Введите элементы массива:\n", n);
-    for (i = 0; i < n; i++) {
-        scanf_s("%d", &a[i]);
+    printf("Массив случайных чисел:\n");
+    for (i = 0; i < stroka; i++) {
+        for (j = 0; j < stolb; j++) {
+            a[i][j] = rand() % 100;
+            printf("%d ", a[i][j]);
+        }
+        printf("\n");
     }
-    printf("Введённый массив:\n");
-    for (i = 0; i < n; i++) {
-        printf("%d ", a[i]);
+    // Вычисление суммы строк
+    for (i = 0; i < stroka; i++) {
+        int sum_stroka = 0;
+        for (j = 0; j < stolb; j++) {
+            sum_stroka += a[i][j];
+        }
+        printf("Сумма строки %d: %d\n", i + 1, sum_stroka);
     }
-    printf("\n");
+    // Вычисление суммы столбцов
+    for (j = 0; j < stolb; j++) {
+        int sum_stolb = 0;
+        for (i = 0; i < stroka; i++) {
+            sum_stolb += a[i][j];
+        }
+        printf("Сумма столбца %d: %d\n", j + 1, sum_stolb);
+    }
+    // Освобождение памяти
+    for (i = 0; i < stroka; i++) {
+        free(a[i]);
+    }
     free(a);
     return 0;
 }
