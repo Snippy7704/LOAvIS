@@ -1,3 +1,4 @@
+//1)
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
@@ -93,6 +94,442 @@ int main() {
     // Освобождение памяти
     free(items1);
     free(items2);
+
+    return 0;
+}
+
+//2)
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
+// Функция сортировки Шелла
+void shell(int* items, int count) {
+    int i, j, gap, k;
+    int x;
+
+    // Определяем массив шагов (gaps)
+    int a[5] = { 9, 5, 3, 2, 1 }; // Можно изменить на другой набор значений для тестирования
+
+    for (k = 0; k < 5; k++) {
+        gap = a[k];
+        for (i = gap; i < count; ++i) {
+            x = items[i];
+            for (j = i - gap; (x < items[j]) && (j >= 0); j = j - gap)
+                items[j + gap] = items[j];
+            items[j + gap] = x;
+        }
+    }
+}
+
+// Функция быстрой сортировки
+void qs(int* items, int left, int right) {
+    int i, j;
+    int x, y;
+
+    i = left;
+    j = right;
+
+    /* выбор компаранда */
+    x = items[(left + right) / 2];
+
+    do {
+        while ((items[i] < x) && (i < right)) i++;
+        while ((x < items[j]) && (j > left)) j--;
+
+        if (i <= j) {
+            y = items[i];
+            items[i] = items[j];
+            items[j] = y;
+            i++;
+            j--;
+        }
+    } while (i <= j);
+
+    if (left < j) qs(items, left, j);
+    if (i < right) qs(items, i, right);
+}
+
+// Функция для заполнения массива возрастающей последовательностью
+void fillIncreasingArray(int* items, int count) {
+    for (int i = 0; i < count; i++) {
+        items[i] = i; // Заполняем массив убывающими числами
+    }
+}
+void printArray(int* items, int count) {
+    for (int i = 0; i < count; i++) {
+        printf("%d ", items[i]);
+    }
+    printf("\n");
+}
+
+int main() {
+    int count = 222222;  // Количество элементов в массиве
+    int* items1 = (int*)malloc(count * sizeof(int));
+    int* items2 = (int*)malloc(count * sizeof(int));
+
+    if (items1 == NULL || items2 == NULL) {
+        printf("Error\n");
+        return 1;
+    }
+
+    // Заполняем массив возрастающими числами
+    fillIncreasingArray(items1, count);
+    // Копируем массив для быстрой сортировки
+    for (int i = 0; i < count; i++) {
+        items2[i] = items1[i];
+    }
+   /* printf("Mass do:\n");
+    printArray(items1, count);*/
+    clock_t start, end;
+    double shellSortTime, quickSortTime;
+
+    // Измерение времени сортировки Шелла
+    start = clock();
+    shell(items1, count);
+    end = clock();
+    shellSortTime = ((double)(end - start)) / CLOCKS_PER_SEC;
+    printf("Time ss: %f sec\n", shellSortTime);
+    /*printf("Mass after ss:\n");
+    printArray(items1, count);*/
+    // Измерение времени быстрой сортировки
+    start = clock();
+    qs(items2, 0, count - 1);
+    end = clock();
+    quickSortTime = ((double)(end - start)) / CLOCKS_PER_SEC;
+    printf("Time qs: %f sec\n", quickSortTime);
+   /* printf("Mass after qs:\n");
+    printArray(items2, count);*/
+    // Освобождение памяти
+    free(items1);
+    free(items2);
+
+    return 0;
+}
+//3)
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
+// Функция сортировки Шелла
+void shell(int* items, int count) {
+    int i, j, gap, k;
+    int x;
+
+    // Определяем массив шагов (gaps)
+    int a[5] = { 9, 5, 3, 2, 1 }; // Можно изменить на другой набор значений для тестирования
+
+    for (k = 0; k < 5; k++) {
+        gap = a[k];
+        for (i = gap; i < count; ++i) {
+            x = items[i];
+            for (j = i - gap; (x < items[j]) && (j >= 0); j = j - gap)
+                items[j + gap] = items[j];
+            items[j + gap] = x;
+        }
+    }
+}
+
+// Функция быстрой сортировки
+void qs(int* items, int left, int right) {
+    int i, j;
+    int x, y;
+
+    i = left;
+    j = right;
+
+    /* выбор компаранда */
+    x = items[(left + right) / 2];
+
+    do {
+        while ((items[i] < x) && (i < right)) i++;
+        while ((x < items[j]) && (j > left)) j--;
+
+        if (i <= j) {
+            y = items[i];
+            items[i] = items[j];
+            items[j] = y;
+            i++;
+            j--;
+        }
+    } while (i <= j);
+
+    if (left < j) qs(items, left, j);
+    if (i < right) qs(items, i, right);
+}
+
+// Функция для заполнения массива возрастающей последовательностью
+void fillDecreasingArray(int* items, int count) {
+    for (int i = 0; i < count; i++) {
+        items[i] = count - 1 - i; // Заполняем массив убывающими числами
+    }
+}
+void printArray(int* items, int count) {
+    for (int i = 0; i < count; i++) {
+        printf("%d ", items[i]);
+    }
+    printf("\n");
+}
+
+int main() {
+    int count = 111111;  // Количество элементов в массиве
+    int* items1 = (int*)malloc(count * sizeof(int));
+    int* items2 = (int*)malloc(count * sizeof(int));
+
+    if (items1 == NULL || items2 == NULL) {
+        printf("Error\n");
+        return 1;
+    }
+
+    // Заполняем массив возрастающими числами
+    fillDecreasingArray(items1, count);
+    // Копируем массив для быстрой сортировки
+    for (int i = 0; i < count; i++) {
+        items2[i] = items1[i];
+    }
+    /*printf("Mass do:\n");
+    printArray(items1, count);*/
+    clock_t start, end;
+    double shellSortTime, quickSortTime;
+
+    // Измерение времени сортировки Шелла
+    start = clock();
+    shell(items1, count);
+    end = clock();
+    shellSortTime = ((double)(end - start)) / CLOCKS_PER_SEC;
+    printf("Time ss: %f sec\n", shellSortTime);
+    /*printf("Mass after ss:\n");
+    printArray(items1, count);*/
+    // Измерение времени быстрой сортировки
+    start = clock();
+    qs(items2, 0, count - 1);
+    end = clock();
+    quickSortTime = ((double)(end - start)) / CLOCKS_PER_SEC;
+    printf("Time qs: %f sec\n", quickSortTime);
+   /* printf("Mass after qs:\n");
+    printArray(items2, count);*/
+    // Освобождение памяти
+    free(items1);
+    free(items2);
+
+    return 0;
+}
+
+//4)
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
+// Функция сортировки Шелла
+void shell(int* items, int count) {
+    int i, j, gap, k;
+    int x;
+    int a[5] = { 9, 5, 3, 2, 1 }; // Массив шагов для сортировки Шелла
+
+    for (k = 0; k < 5; k++) {
+        gap = a[k];
+        for (i = gap; i < count; ++i) {
+            x = items[i];
+            for (j = i - gap; (x < items[j]) && (j >= 0); j = j - gap)
+                items[j + gap] = items[j];
+            items[j + gap] = x;
+        }
+    }
+}
+
+// Функция быстрой сортировки
+void qs(int* items, int left, int right) {
+    int i, j;
+    int x, y;
+
+    i = left;
+    j = right;
+
+    /* выбор компаранда */
+    x = items[(left + right) / 2];
+
+    do {
+        while ((items[i] < x) && (i < right)) i++;
+        while ((x < items[j]) && (j > left)) j--;
+
+        if (i <= j) {
+            y = items[i];
+            items[i] = items[j];
+            items[j] = y;
+            i++;
+            j--;
+        }
+    } while (i <= j);
+
+    if (left < j) qs(items, left, j);
+    if (i < right) qs(items, i, right);
+}
+
+// Функция для создания массива с возрастающей и убывающей последовательностями
+void fillHalfIncreasingHalfDecreasingArray(int* items, int count) {
+    int half = count / 2;
+
+    // Заполняем первую половину возрастающими числами
+    for (int i = 0; i < half; i++) {
+        items[i] = i;
+    }
+
+    // Заполняем вторую половину убывающими числами
+    for (int i = half; i < count; i++) {
+        items[i] = count - 1 - i;
+    }
+}
+
+// Функция для вывода массива
+void printArray(int* items, int count) {
+    for (int i = 0; i < count; i++) {
+        printf("%d ", items[i]);
+    }
+    printf("\n");
+}
+
+int main() {
+    int count = 999;  // Количество элементов в массиве
+    int* items1 = (int*)malloc(count * sizeof(int));
+    int* items2 = (int*)malloc(count * sizeof(int));
+
+    if (items1 == NULL || items2 == NULL) {
+        printf("Error\n");
+        return 1;
+    }
+
+    // Создаем массив с первой половиной возрастающих и второй половиной убывающих чисел
+    fillHalfIncreasingHalfDecreasingArray(items1, count);
+    // Копируем массив для быстрой сортировки
+    for (int i = 0; i < count; i++) {
+        items2[i] = items1[i];
+    }
+    /*printf("Mass do:\n");
+   printArray(items1, count);*/
+    clock_t start, end;
+    double shellSortTime, quickSortTime;
+
+    // Измерение времени сортировки Шелла
+    start = clock();
+    shell(items1, count);
+    end = clock();
+    shellSortTime = ((double)(end - start)) / CLOCKS_PER_SEC;
+    printf("Time ss: %f sec\n", shellSortTime);
+
+    // Выводим массив после сортировки Шелла 
+    // printf("Mass after ss:\n");
+    // printArray(items1, count);
+
+    // Измерение времени быстрой сортировки
+    start = clock();
+    qs(items2, 0, count - 1);
+    end = clock();
+    quickSortTime = ((double)(end - start)) / CLOCKS_PER_SEC;
+    printf("Time qs: %f sec\n", quickSortTime);
+
+    // Выводим массив после быстрой сортировки (
+    // printf("mass after qs:\n");
+    // printArray(items2, count);
+
+    // Освобождение памяти
+    free(items1);
+    free(items2);
+
+    return 0;
+}
+//5)
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
+// Функция для сравнения двух элементов (необходима для qsort)
+int compare(const void* a, const void* b) {
+    return (*(int*)a - *(int*)b);
+}
+
+// Функция для заполнения массива случайными значениями
+void fillRandomArray(int* items, int count) {
+    srand(time(NULL));
+    for (int i = 0; i < count; i++) {
+        items[i] = rand() % 10000; // Заполняем массив случайными числами
+    }
+}
+
+// Функция для создания массива с возрастающими значениями
+void fillIncreasingArray(int* items, int count) {
+    for (int i = 0; i < count; i++) {
+        items[i] = i;
+    }
+}
+
+// Функция для создания массива с убывающими значениями
+void fillDecreasingArray(int* items, int count) {
+    for (int i = 0; i < count; i++) {
+        items[i] = count - i - 1;
+    }
+}
+
+// Функция для создания массива с возрастающей половиной и убывающей половиной
+void fillHalfIncreasingHalfDecreasingArray(int* items, int count) {
+    int half = count / 2;
+    for (int i = 0; i < half; i++) {
+        items[i] = i;
+    }
+    for (int i = half; i < count; i++) {
+        items[i] = count - 1 - i;
+    }
+}
+
+// Функция для измерения времени выполнения qsort
+void measureQsortTime(int* items, int count, const char* description) {
+    int* copy = (int*)malloc(count * sizeof(int));
+    if (copy == NULL) {
+        printf("Error\n");
+        exit(1);
+    }
+
+    // Копируем массив для сортировки
+    for (int i = 0; i < count; i++) {
+        copy[i] = items[i];
+    }
+
+    clock_t start = clock();
+    qsort(copy, count, sizeof(int), compare);
+    clock_t end = clock();
+    double timeSpent = ((double)(end - start)) / CLOCKS_PER_SEC;
+
+    printf("Time qsort for %s: %f sec\n", description, timeSpent);
+
+    // Освобождение памяти
+    free(copy);
+}
+
+int main() {
+    int count = 1000000;  // Количество элементов в массиве
+    int* items = (int*)malloc(count * sizeof(int));
+    if (items == NULL) {
+        printf("Error\n");
+        return 1;
+    }
+
+    // Заполняем и измеряем время для случайного массива
+    fillRandomArray(items, count);
+    measureQsortTime(items, count, "rand mass");
+
+    // Заполняем и измеряем время для возрастающего массива
+    fillIncreasingArray(items, count);
+    measureQsortTime(items, count, "vozr mass");
+
+    // Заполняем и измеряем время для убывающего массива
+    fillDecreasingArray(items, count);
+    measureQsortTime(items, count, "ub mass");
+
+    // Заполняем и измеряем время для массива с возрастающей половиной и убывающей половиной
+    fillHalfIncreasingHalfDecreasingArray(items, count);
+    measureQsortTime(items, count, "vozr/ub mass");
+
+    // Освобождение памяти
+    free(items);
 
     return 0;
 }
