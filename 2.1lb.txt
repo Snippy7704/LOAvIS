@@ -1,0 +1,98 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
+// Функция сортировки Шелла
+void shell(int* items, int count) {
+    int i, j, gap, k;
+    int x;
+
+    int a[5] = { 9, 5, 3, 2, 1 };
+
+    for (k = 0; k < 5; k++) {
+        gap = a[k];
+        for (i = gap; i < count; ++i) {
+            x = items[i];
+            for (j = i - gap; (x < items[j]) && (j >= 0); j = j - gap)
+                items[j + gap] = items[j];
+            items[j + gap] = x;
+        }
+    }
+}
+
+// Функция быстрой сортировки
+void qs(int* items, int left, int right) {
+    int i, j;
+    int x, y;
+
+    i = left;
+    j = right;
+
+    /* выбор компаранда */
+    x = items[(left + right) / 2];
+
+    do {
+        while ((items[i] < x) && (i < right)) i++;
+        while ((x < items[j]) && (j > left)) j--;
+
+        if (i <= j) {
+            y = items[i];
+            items[i] = items[j];
+            items[j] = y;
+            i++;
+            j--;
+        }
+    } while (i <= j);
+
+    if (left < j) qs(items, left, j);
+    if (i < right) qs(items, i, right);
+}
+
+// Функция для заполнения массива случайными числами
+void fillArray(int* items, int count) {
+    srand(time(NULL));
+    for (int i = 0; i < count; i++) {
+        items[i] = rand() % 10000; // Заполняем массив случайными числами
+    }
+}
+
+int main() {
+    int count = 10000;  // Количество элементов в массиве
+    int* items1 = (int*)malloc(count * sizeof(int));
+    int* items2 = (int*)malloc(count * sizeof(int));
+
+    if (items1 == NULL || items2 == NULL) {
+        printf("Error\n");
+        return 1;
+    }
+
+    // Заполняем первый массив случайными числами
+    fillArray(items1, count);
+    // Копируем массив для быстрой сортировки
+    for (int i = 0; i < count; i++) {
+        items2[i] = items1[i];
+    }
+
+    clock_t start, end;
+    double shellSortTime, quickSortTime;
+
+    // Измерение времени сортировки Шелла
+    start = clock();
+    shell(items1, count);
+    end = clock();
+    shellSortTime = ((double)(end - start)) / CLOCKS_PER_SEC;
+    printf("Time ss: %f sec\n", shellSortTime);
+
+    // Измерение времени быстрой сортировки
+    start = clock();
+    qs(items2, 0, count - 1);
+    end = clock();
+    quickSortTime = ((double)(end - start)) / CLOCKS_PER_SEC;
+    printf("Time qs: %f sec\n", quickSortTime);
+
+    // Освобождение памяти
+    free(items1);
+    free(items2);
+
+    return 0;
+}
