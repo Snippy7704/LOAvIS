@@ -1,0 +1,81 @@
+#include <iostream>
+#include <cstdlib>
+#include <time.h>
+
+using namespace std;
+
+// Функция для создания матрицы
+int** create_matrix(int rows, int cols) {
+    int** matr = (int**)malloc(rows * sizeof(int*));
+    for (int i = 0; i < rows; i++) {
+        matr[i] = (int*)malloc(cols * sizeof(int));
+    }
+    return matr;
+}
+
+// Функция для заполнения матрицы случайными значениями
+void fill_matrix(int** matr, int rows, int cols) {
+    for (int i = 0; i < rows; i++) {
+        for (int j = 0; j < cols; j++) {
+            matr[i][j] = rand() % 101; // значения от 0 до 100
+        }
+    }
+}
+
+// Функция для умножения матриц A и B
+void multiply_matrices(int** matrA, int** matrB, int** matrC, int rows, int cols) {
+    for (int i = 0; i < rows; i++) {
+        for (int j = 0; j < cols; j++) {
+            matrC[i][j] = 0; // инициализируем элемент результирующей матрицы
+            for (int k = 0; k < cols; k++) {
+                matrC[i][j] += matrA[i][k] * matrB[k][j];
+            }
+        }
+    }
+}
+
+int main() {
+    setvbuf(stdin, NULL, _IONBF, 0);
+    setvbuf(stdout, NULL, _IONBF, 0);
+
+    srand(time(NULL)); // Инициализация генератора случайных чисел
+
+    int sizes[] = { 100, 200, 400, 1000, 2000, 4000 }; // размеры матриц
+
+    for (int size_idx = 0; size_idx < 6; size_idx++) {
+        int size = sizes[size_idx];
+        cout << "Matrix size: " << size << "x" << size << endl;
+
+        // Создание матриц A, B и C
+        int** matrA = create_matrix(size, size);
+        int** matrB = create_matrix(size, size);
+        int** matrC = create_matrix(size, size);
+
+        // Заполнение матриц A и B случайными числами
+        fill_matrix(matrA, size, size);
+        fill_matrix(matrB, size, size);
+
+        // Замер времени умножения матриц
+        clock_t start = clock();
+        multiply_matrices(matrA, matrB, matrC, size, size);
+        clock_t end = clock();
+
+        // Вывод времени выполнения
+        double time_spent = (double)(end - start) / CLOCKS_PER_SEC;
+        cout << "Time taken: " << time_spent << " seconds" << endl;
+
+        // Освобождение памяти
+        for (int i = 0; i < size; i++) {
+            free(matrA[i]);
+            free(matrB[i]);
+            free(matrC[i]);
+        }
+        free(matrA);
+        free(matrB);
+        free(matrC);
+
+        cout << "------------------------" << endl;
+    }
+
+    return 0;
+}
