@@ -1,0 +1,22 @@
+#include <cstdlib> // Для функции rand() и srand()
+#include <ctime>   // Для функции time()
+#include <iostream>
+int main() {
+	setlocale(LC_ALL, "Russian"); // Для поддержки русского языка в консоли
+
+	const int n = 10;
+	int a[n];
+
+	// Инициализация генератора случайных чисел
+	srand(static_cast<unsigned int>(time(0)));
+
+	// Заполнение массива случайными числами
+	std::cout << "Массив случайных чисел:\n";
+	for (int i = 0; i < n; ++i) {
+		a[i] = rand() % 101-50;
+		std::cout << a[i] << " ";
+	}
+	std::cout << std::endl;
+
+	return 0;
+}
