@@ -1,0 +1,118 @@
+#include <stdlib.h>
+#include <string.h>
+#include <locale.h>
+#include <stdio.h>
+
+struct node {
+    char inf[256];  // Полезная информация
+    struct node* next; // Ссылка на следующий элемент
+};
+
+// Указатель на вершину стека
+struct node* head = NULL;
+
+// Функции добавления элемента, удаления элемента, просмотра содержимого стека
+void push(void), pop(void), review(void);
+
+// Вспомогательные функции
+int is_empty(void);
+struct node* get_struct(void); // Создание нового элемента
+
+
+// Функция создания нового элемента
+struct node* get_struct(void) {
+    struct node* p = NULL;
+    char s[256];
+
+    if ((p = (struct node*)malloc(sizeof(struct node))) == NULL) {  // Выделяем память под новый элемент
+        printf("Ошибка при распределении памяти\n");
+        exit(1);
+    }
+
+    printf("Введите название объекта: \n");   // Вводим данные
+    scanf_s("%s", s, (unsigned)_countof(s));
+    if (*s == 0) {
+        printf("Запись не была произведена\n");
+        return NULL;
+    }
+    strcpy_s(p->inf, s);
+
+    p->next = NULL;
+
+    return p;  // Возвращаем указатель на созданный элемент
+}
+
+// Добавление элемента в вершину стека (push)
+void push(void) {
+    struct node* p = get_struct();
+    if (p == NULL) return;
+
+    p->next = head;  // Новый элемент ссылается на предыдущую вершину
+    head = p;        // Обновляем вершину стека
+}
+
+// Удаление элемента с вершины стека (pop)
+void pop(void) {
+    if (is_empty()) {
+        printf("Стек пуст\n");
+        return;
+    }
+
+    struct node* temp = head;  // Временная переменная для удаления
+    printf("Удален элемент: %s\n", temp->inf);
+
+    head = head->next;  // Вершина перемещается на следующий элемент
+    free(temp);       // Удаляем старую вершину
+}
+
+// Просмотр содержимого стека
+void review(void) {
+    if (is_empty()) {
+        printf("Стек пуст\n");
+        return;
+    }
+
+    struct node* struc = head;
+    printf("Содержимое стека:\n");
+    while (struc) {
+        printf("Элемент: %s\n", struc->inf);
+        struc = struc->next;
+    }
+}
+
+// Проверка, пуст ли стек
+int is_empty(void) {
+    return head == NULL;
+}
+
+int main() {
+    setlocale(LC_ALL, "Russian");
+
+    int choice;
+    while (1) {
+        printf("1. Добавить элемент в стек (push)\n");
+        printf("2. Удалить элемент из стека (pop)\n");
+        printf("3. Просмотр содержимого стека (review)\n");
+        printf("0. Выход\n");
+        scanf_s("%d", &choice);
+
+        switch (choice) {
+        case 1:
+            push();  // Добавление элемента в стек
+            break;
+        case 2:
+            pop();   // Удаление элемента с вершины стека
+            break;
+        case 3:
+            review();  // Просмотр содержимого стека
+            break;
+        case 0:
+            exit(0);  // Выход из программы
+        default:
+            printf("Неверный выбор\n");
+            break;
+        }
+    }
+
+    return 0;
+}
