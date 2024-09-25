@@ -1,0 +1,176 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <locale.h>
+#include <string.h>
+
+// Структура для элемента очереди
+struct node {
+    int id; // Номер элемента
+    char inf[256]; // Полезная информация (элемент)
+    struct node* next; // Ссылка на следующий элемент
+};
+
+// Указатели на начало и конец очереди
+struct node* head = NULL; // Указатель на первый элемент (начало очереди)
+struct node* tail = NULL; // Указатель на последний элемент (конец очереди)
+
+// Функции для работы с очередью
+void enqueue(void); // Добавление элемента в очередь
+void del(void); // Удаление элемента из очереди
+void review(void); // Просмотр содержимого очереди
+int is_empty(void); // Проверка, пуста ли очередь
+void find(void); // Поиск элемента по содержимому
+
+// Функция создания нового элемента
+struct node* get_struct(void);
+
+struct node* get_struct(void) {
+    struct node* p = NULL;
+    char s[256];
+    int id;
+
+    // Выделение памяти под новый элемент
+    if ((p = (struct node*)malloc(sizeof(struct node))) == NULL) {
+        printf("Ошибка при распределении памяти\n");
+        exit(1);
+    }
+
+    // Ввод номера элемента
+    printf("Введите номер объекта: \n");
+    scanf_s("%d", &id);
+
+    // Ввод данных
+    printf("Введите название объекта: \n");
+    scanf_s("%s", s, (unsigned)_countof(s));
+    if (*s == 0) {
+        printf("Запись не была произведена\n");
+        return NULL;
+    }
+
+    // Устанавливаем данные
+    p->id = id; // Присваиваем введенный номер элементу
+    strcpy_s(p->inf, s);
+    p->next = NULL;
+
+    return p; // Возвращаем указатель на созданный элемент
+}
+
+// Добавление элемента в конец очереди
+void enqueue(void) {
+    struct node* p = get_struct(); // Создаем новый элемент
+
+    if (p == NULL)
+        return; // Если элемент не создан, выходим
+
+    if (is_empty()) {
+        head = p; // Если очередь пуста, новый элемент становится первым
+        tail = p; // И также становится последним
+    }
+    else {
+        tail->next = p; // Привязываем новый элемент к концу очереди
+        tail = p; // Обновляем конец очереди
+    }
+}
+
+// Удаление элемента из начала очереди
+void del(void) {
+    if (is_empty()) { // Если очередь пуста, выводим сообщение
+        printf("Очередь пуста\n");
+        return;
+    }
+
+    struct node* temp = head; // Указатель на первый элемент
+    head = head->next; // Перемещаем голову на следующий элемент
+
+    printf("Удален элемент: номер = %d, Имя = %s\n", temp->id, temp->inf);
+    free(temp); // Освобождаем память удаленного элемента
+
+    if (head == NULL) {
+        tail = NULL; // Если очередь опустела, обновляем tail
+    }
+}
+
+// Функция проверки, пуста ли очередь
+int is_empty(void) {
+    return head == NULL; // Если head == NULL, значит очередь пуста
+}
+
+// Функция просмотра содержимого очереди
+void review(void) {
+    if (is_empty()) {
+        printf("Очередь пуста\n");
+        return;
+    }
+
+    struct node* struc = head;
+    printf("Содержимое очереди:\n");
+    while (struc) {
+        printf("номер: %d, Имя: %s\n", struc->id, struc->inf);
+        struc = struc->next; // Переходим к следующему элементу
+    }
+}
+
+// Функция поиска элемента по содержимому
+void find(void) {
+    if (is_empty()) {
+        printf("Очередь пуста\n");
+        return;
+    }
+
+    char search_term[256];
+    printf("Введите название для поиска: \n");
+    scanf_s("%s", search_term, (unsigned)_countof(search_term));
+
+    struct node* current = head;
+    int found = 0;
+    while (current != NULL) {
+        if (strcmp(current->inf, search_term) == 0) {
+            printf("Элемент найден: номер = %d, Имя = %s\n", current->id, current->inf);
+            found = 1;
+            break;
+        }
+        current = current->next;
+    }
+
+    if (!found) {
+        printf("Элемент не найден\n");
+    }
+}
+
+int main() {
+    setlocale(LC_ALL, "Russian");
+
+    int choice;
+
+
+    while (1) {
+        printf("1. Добавить элемент в очередь\n");
+        printf("2. Удалить элемент из очереди\n");
+        printf("3. Просмотр содержимого очереди\n");
+        printf("4. Поиск элемента по содержимому\n");
+        printf("0. Выход\n");
+        scanf_s("%d", &choice);
+
+        switch (choice) {
+        case 1:
+            enqueue(); // Добавление элемента в очередь
+            break;
+        case 2:
+            del(); // Удаление элемента из очереди
+            break;
+        case 3:
+            review(); // Просмотр содержимого очереди
+            break;
+        case 4:
+            find(); // Поиск элемента по содержимому
+            break;
+        case 0:
+            exit(0); // Выход из программы
+        default:
+            printf("Неверный выбор\n");
+            break;
+        }
+    }
+
+    return 0;
+}
