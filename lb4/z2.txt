@@ -1,0 +1,118 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <locale.h>
+
+struct Node {
+    int data;
+    struct Node* left;
+    struct Node* right;
+};
+
+struct Node* root;
+
+struct Node* CreateTree(struct Node* root, struct Node* r, int data) {
+    if (r == NULL) {
+        r = (struct Node*)malloc(sizeof(struct Node));
+        if (r == NULL) {
+            printf("Ошибка выделения памяти");
+            exit(0);
+        }
+
+        r->left = NULL;
+        r->right = NULL;
+        r->data = data;
+        if (root == NULL) return r;
+
+        if (data > root->data) root->left = r;
+        else root->right = r;
+        return r;
+    }
+
+    if (data > r->data)
+        CreateTree(r, r->left, data);
+    else
+        CreateTree(r, r->right, data);
+
+    return root;
+}
+
+void print_tree(struct Node* r, int l) {
+    if (r == NULL) {
+        return;
+    }
+
+    print_tree(r->right, l + 1);
+    for (int i = 0; i < l; i++) {
+        printf(" ");
+    }
+
+    printf("%d\n", r->data);
+    print_tree(r->left, l + 1);
+}
+
+
+int Count(struct Node* r, int value) {
+    if (r == NULL) {
+        return 0;
+    }
+
+    int count = (r->data == value) ? 1 : 0;
+    count += Count(r->left, value);
+    count += Count(r->right, value);
+
+    return count;
+}
+
+int main() {
+    setlocale(LC_ALL, "");
+    int D, nn;
+    root = NULL;
+
+    do {
+        printf("Выбирите нужный пункт:\n1. Создать дерево\n2. Число вхождений\n0. Выход\n");
+        scanf_s("%d", &nn);
+
+        switch (nn) {
+        case 1: {
+            int start = 1;
+            while (start) {
+                printf("Введите число (-1 для завершения): ");
+                scanf_s("%d", &D);
+                if (D == -1) {
+                    printf("Построение дерева окончено\n\n");
+                    start = 0;
+                }
+                else {
+                    root = CreateTree(root, root, D);
+                }
+            }
+            print_tree(root, 0);
+            break;
+        }
+
+
+        case 2: {
+            if (root == NULL) {
+                printf("Дерево не создано. Пожалуйста, создайте дерево для подсчета вхождений.\n");
+            }
+            else {
+                printf("Введите число для подсчета вхождений: ");
+                scanf_s("%d", &D);
+                int occurrences = Count(root, D);
+                printf("Число %d встречается в дереве %d раз.\n", D, occurrences);
+            }
+            break;
+        }
+
+        case 0: {
+            printf("Выход из программы.\n");
+            break;
+        }
+
+        default:
+            printf("Неправильный ввод. Попробуйте снова.\n");
+        }
+    } while (nn != 0);
+
+    return 0;
+}
