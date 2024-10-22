@@ -1,0 +1,131 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <locale.h>
+#include <time.h>
+
+int main() {
+    int m, e = 0; // Количество вершин и рёбер (изначально рёбра не известны)
+    int** G;      // Матрица смежности
+    int** I;      // Матрица инцидентности
+    int* deg_in;  // Степени входящих рёбер
+    int* deg_out; // Степени исходящих рёбер
+    srand(time(NULL));
+    setlocale(LC_ALL, "");
+
+    // Ввод количества вершин
+    printf("Введите количество вершин графа: ");
+    scanf_s("%d", &m);
+
+    // Выделение памяти для матрицы смежности
+    G = (int**)malloc(m * sizeof(int*));
+    for (int i = 0; i < m; i++) {
+        G[i] = (int*)malloc(m * sizeof(int));
+    }
+
+    // Генерация матрицы смежности
+    printf("Матрица смежности для ориентированного графа:\n");
+    for (int i = 0; i < m; i++) {
+        for (int j = 0; j < m; j++) {
+            if (i == j) {
+                G[i][j] = 0; // На диагонали всегда 0
+            }
+            else {
+                G[i][j] = rand() % 2; // Случайное значение 0 или 1
+            }
+        }
+    }
+
+    // Подсчет количества рёбер
+    for (int i = 0; i < m; i++) {
+        for (int j = 0; j < m; j++) {
+            if (G[i][j] == 1) {
+                e++;
+            }
+        }
+    }
+
+    // Вывод матрицы смежности
+    for (int i = 0; i < m; i++) {
+        for (int j = 0; j < m; j++) {
+            printf("%d ", G[i][j]);
+        }
+        printf("\n");
+    }
+
+    // Выделение памяти для матрицы инцидентности
+    I = (int**)malloc(m * sizeof(int*));
+    for (int i = 0; i < m; i++) {
+        I[i] = (int*)malloc(e * sizeof(int));
+        for (int j = 0; j < e; j++) {
+            I[i][j] = 0; // Инициализация нулями
+        }
+    }
+
+    // Заполнение матрицы инцидентности на основе матрицы смежности
+    int edge_index = 0;
+    for (int i = 0; i < m; i++) {
+        for (int j = 0; j < m; j++) {
+            if (G[i][j] == 1) {
+                I[i][edge_index] = 1;  // Исходящее ребро
+                I[j][edge_index] = -1; // Входящее ребро
+                edge_index++;
+            }
+        }
+    }
+
+    // Вывод матрицы инцидентности
+    printf("\nМатрица инцидентности:\n");
+    for (int i = 0; i < m; i++) {
+        for (int j = 0; j < e; j++) {
+            printf("%d ", I[i][j]);
+        }
+        printf("\n");
+    }
+
+    // Размер графа
+    printf("\nКоличество рёбер = %d\n", e);
+
+    // Поиск степеней вершин
+    printf("\nПоиск входящих и исходящих степеней вершин:\n");
+    deg_in = (int*)malloc(m * sizeof(int));
+    deg_out = (int*)malloc(m * sizeof(int));
+
+    for (int i = 0; i < m; i++) {
+        deg_in[i] = 0;
+        deg_out[i] = 0;
+    }
+
+    for (int i = 0; i < m; i++) {
+        for (int j = 0; j < e; j++) {
+            if (I[i][j] == 1) {
+                deg_out[i]++; // Исходящие рёбра
+            }
+            if (I[i][j] == -1) {
+                deg_in[i]++;  // Входящие рёбра
+            }
+        }
+        printf("Вершина %d: входящая степень = %d, исходящая степень = %d\n", i + 1, deg_in[i], deg_out[i]);
+    }
+
+    // Поиск изолированных и концевых вершин
+    for (int i = 0; i < m; i++) {
+        if (deg_in[i] == 0 && deg_out[i] == 0) {
+            printf("Вершина %d изолированная\n", i + 1);
+        }
+        if (deg_in[i] + deg_out[i] == 1) {
+            printf("Вершина %d концевая\n", i + 1);
+        }
+    }
+
+    // Освобождение памяти
+    for (int i = 0; i < m; i++) {
+        free(G[i]);
+        free(I[i]);
+    }
+    free(G);
+    free(I);
+    free(deg_in);
+    free(deg_out);
+
+    return 0;
+}
