@@ -1,0 +1,85 @@
+#include <iostream>   
+#include <stack>      
+using namespace std;  
+
+
+int** creatG(int len) {
+    int** G;             
+    G = new int* [len];  
+
+    
+    for (int i = 0; i < len; i++) {
+        G[i] = new int[len]; 
+    }
+
+
+    for (int i = 0; i < len; i++) {
+        for (int j = i; j < len; j++) {
+            if (i == j) G[i][i] = 0;  
+            else {
+                G[i][j] = rand() % 2;   
+                G[j][i] = G[i][j];      
+            }
+        }
+    }
+    return G;  
+}
+
+
+void printG(int** G, int len) {
+    for (int i = 0; i < len; i++) {    
+        for (int j = 0; j < len; j++) {  
+            cout << G[i][j] << " ";        
+        }
+        cout << "\n"; 
+    }
+    cout << "\n";    
+}
+
+// Функция проверяет, все ли вершины посещены (true)
+bool num_empty(bool* num, int len) {
+    for (int i = 0; i < len; i++) {         
+        if (num[i] == false) return false;    // Если найдена непосещенная, возвращаем false
+    }
+    return true;                          
+}
+
+
+int main() {
+    setlocale(LC_ALL, "");     
+    int** G, len;             
+    cout << "Введите длину графа: ";  
+    cin >> len;               
+
+    bool* num;                 
+    num = new bool[len];       
+    for (int i = 0; i < len; i++) { num[i] = false; }  
+
+    G = creatG(len);          
+    printG(G, len);            
+
+    stack<int> stack;          // Создаем стек для обхода графа
+    int s = 0;                 
+
+    while (1) {               
+        // Добавляем в стек все смежные вершины, которые еще не посещены
+        for (int i = len - 1; i >= 0; i--) {
+            if (G[s][i] == 1 && num[i] == false) stack.push(i);  
+        }
+
+        cout << s + 1 << " ";    
+        num[s] = true;           // Отмечаем текущую вершину как посещенную
+
+        if (num_empty(num, len)) break;  
+
+        // Переходим к следующей вершине из стека
+        for (int i = 0; i < len; i++) {
+            if (num[stack.top()] == false) {  
+                s = stack.top();                
+                stack.pop();                    
+                break;                         
+            }
+        }
+    }
+    return 0;  
+}

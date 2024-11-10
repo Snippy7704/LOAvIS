@@ -1,0 +1,126 @@
+#include <iostream>  
+#include <string>     
+using namespace std;
+
+// Определение структуры node, представляющей узел в списке
+struct node {
+    string n;         // Строка для хранения значения узла
+    node* next;       // Указатель на следующий узел
+    node(string _n) : n(_n), next(nullptr) {}  // Конструктор инициализации узла
+};
+
+// Определение структуры list, представляющей список смежности для одного узла
+struct list {
+    node* first;           // Указатель на первый узел списка
+    list() : first(nullptr) {}  // Конструктор инициализация списка
+
+    // Метод проверки на пустоту списка
+    bool is_empty() { return first == nullptr; }
+
+    // Метод добавления узла в список
+    void add(string _n) {
+        node* p = new node(_n);  
+        if (is_empty()) {       
+            first = p;             
+            return;               
+        }
+        node* t1 = first;       
+        while (t1->next != nullptr) {  
+            t1 = t1->next;               
+        }
+        t1->next = p;           
+    }
+
+    // Метод вывода списка на экран
+    void print(int i) {
+        if (is_empty()) {                     // Если список пуст
+            cout << i << ": " << "null\n";      // Выводим номер узла и "null"
+            return;
+        }
+        node* p = first;            
+        cout << i << ": ";          
+        while (p) {                
+            cout << p->n << " ";      
+            p = p->next;              
+        }
+        cout << "\n";              
+    }
+
+    // Метод для проверки значения в определенной позиции списка
+    int check_cell(int n) {
+        int i = 0;                 // Счетчик узлов
+        node* p = first;           // Указатель на текущий узел, начинаем с первого
+        while (p && i != n) {      // Пока не дошли до нужной позиции и не конец списка
+            p = p->next;             // Переход к следующему узлу
+            i++;                     // Увеличиваем счетчик
+        }
+        if (p == nullptr) return 1;  // Если узел не найден, возвращаем 1
+        return stoi(p->n);         // Преобразуем значение узла из строки в число и возвращаем
+    }
+};
+
+// Функция для создания матрицы смежности графа
+int** creatG(int len) {
+    int** G;                  
+    srand(time(0));           
+    G = new int* [len];      
+    for (int i = 0; i < len; i++) {
+        G[i] = new int[len];    
+    }
+    for (int i = 0; i < len; i++) {    
+        for (int j = i; j < len; j++) {  
+            if (i == j) G[i][i] = 0;       
+            else {
+                G[i][j] = rand() % 2;        
+                G[j][i] = G[i][j];           
+            }
+        }
+    }
+    return G;                         
+}
+
+// Функция для вывода матрицы смежности на экран
+void printG(int** G, int len) {
+    for (int i = 0; i < len; i++) {    
+        for (int j = 0; j < len; j++) {  
+            cout << G[i][j] << " ";        
+        }
+        cout << "\n";                   
+    }
+    cout << "\n";                     
+}
+
+// Рекурсивная функция обхода графа в глубину (DFS)
+void dfs(int v, bool* num, int len, struct list* l) {
+    num[v - 1] = true;             // Помечаем узел как посещенный
+    cout << " " << v;              
+    for (int i = 0; i < len; i++) {
+        int n = l[v - 1].check_cell(i); 
+        if (num[n - 1] == false) {      
+            dfs(n, num, len, l);          
+        }
+    }
+}
+
+int main() {
+    setlocale(LC_ALL, "");         
+    int** G, len;                  
+    cout << "Введите длинну графа: ";
+    cin >> len;                   
+    bool* num;                     
+    num = new bool[len];           
+    for (int i = 0; i < len; i++) { num[i] = false; }  
+    G = creatG(len);               
+    printG(G, len);                
+    cout << "\n";
+    list* l = new list[len];       
+    for (int i = 0; i < len; i++) {         
+        for (int j = 0; j < len; j++) {       
+            if (G[i][j] == 1) l[i].add(to_string(j + 1));  
+        }
+        l[i].print(i + 1);                 
+    }
+    cout << "\n";
+    dfs(1, num, len, l);           
+    return 0;                      
+}
