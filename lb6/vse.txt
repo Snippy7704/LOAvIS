@@ -1,0 +1,481 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+#include <locale.h>
+
+void generateAdjacencyMatrix(int** matrix, int n) {
+    for (int i = 0; i < n; i++) {
+        for (int j = i; j < n; j++) {
+            if (i == j) {
+                matrix[i][j] = 0;
+            }
+            else {
+                int randomEdge = rand() % 2;
+                matrix[i][j] = randomEdge;
+                matrix[j][i] = randomEdge;
+            }
+        }
+    }
+}
+
+void printAdjacencyMatrix(int** matrix, int n) {
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+            printf("%d ", matrix[i][j]);
+        }
+        printf("\n");
+    }
+}
+
+void adjacencyMatrixToList(int** matrix, int** adjacencyList, int* degrees, int n) {
+    for (int i = 0; i < n; i++) {
+        degrees[i] = 0;
+        for (int j = 0; j < n; j++) {
+            if (matrix[i][j] == 1) {
+                adjacencyList[i][degrees[i]] = j;
+                degrees[i]++;
+            }
+        }
+    }
+}
+
+void printAdjacencyList(int** adjacencyList, int* degrees, int n) {
+    for (int i = 0; i < n; i++) {
+        printf("Вершина %d: ", i);
+        for (int j = 0; j < degrees[i]; j++) {
+            printf("%d ", adjacencyList[i][j]);
+        }
+        printf("\n");
+    }
+}
+
+void unionGraphsMatrix(int** result, int** matrix1, int** matrix2, int n) {
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+            result[i][j] = matrix1[i][j] | matrix2[i][j];
+        }
+    }
+}
+
+void unionGraphsList(int** resultList, int* resultDegrees, int** list1, int* degrees1, int** list2, int* degrees2, int n) {
+    for (int i = 0; i < n; i++) {
+        resultDegrees[i] = 0;
+        for (int j = 0; j < degrees1[i]; j++) {
+            resultList[i][resultDegrees[i]++] = list1[i][j];
+        }
+        for (int j = 0; j < degrees2[i]; j++) {
+            int found = 0;
+            for (int k = 0; k < resultDegrees[i]; k++) {
+                if (resultList[i][k] == list2[i][j]) {
+                    found = 1;
+                    break;
+                }
+            }
+            if (!found) {
+                resultList[i][resultDegrees[i]++] = list2[i][j];
+            }
+        }
+    }
+}
+
+void intersectionGraphsMatrix(int** result, int** matrix1, int** matrix2, int n) {
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+            result[i][j] = matrix1[i][j] & matrix2[i][j];
+        }
+    }
+}
+
+void intersectionGraphsList(int** resultList, int* resultDegrees, int** list1, int* degrees1, int** list2, int* degrees2, int n) {
+    for (int i = 0; i < n; i++) {
+        resultDegrees[i] = 0;
+        for (int j = 0; j < degrees1[i]; j++) {
+            for (int k = 0; k < degrees2[i]; k++) {
+                if (list1[i][j] == list2[i][k]) {
+                    resultList[i][resultDegrees[i]++] = list1[i][j];
+                    break;
+                }
+            }
+        }
+    }
+}
+
+void ringSumGraphsMatrix(int** result, int** matrix1, int** matrix2, int n) {
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+            result[i][j] = matrix1[i][j] ^ matrix2[i][j];
+        }
+    }
+}
+
+void ringSumGraphsList(int** resultList, int* resultDegrees, int** list1, int* degrees1, int** list2, int* degrees2, int n) {
+    for (int i = 0; i < n; i++) {
+        resultDegrees[i] = 0;
+        for (int j = 0; j < degrees1[i]; j++) {
+            int found = 0;
+            for (int k = 0; k < degrees2[i]; k++) {
+                if (list1[i][j] == list2[i][k]) {
+                    found = 1;
+                    break;
+                }
+            }
+            if (!found) {
+                resultList[i][resultDegrees[i]++] = list1[i][j];
+            }
+        }
+        for (int j = 0; j < degrees2[i]; j++) {
+            int found = 0;
+            for (int k = 0; k < degrees1[i]; k++) {
+                if (list2[i][j] == list1[i][k]) {
+                    found = 1;
+                    break;
+                }
+            }
+            if (!found) {
+                resultList[i][resultDegrees[i]++] = list2[i][j];
+            }
+        }
+    }
+}
+
+void cartesianProductGraphsMatrix(int** result, int** matrix1, int** matrix2, int n) {
+    int size = n * n;
+    for (int i = 0; i < size; i++) {
+        result[i] = (int*)malloc(size * sizeof(int));
+    }
+
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+            for (int k = 0; k < n; k++) {
+                for (int l = 0; l < n; l++) {
+                    int idx1 = i * n + k;
+                    int idx2 = j * n + l;
+                    result[idx1][idx2] = (i == j && matrix2[k][l] == 1) || (k == l && matrix1[i][j] == 1);
+                }
+            }
+        }
+    }
+}
+void mergeVerticesMatrix(int** matrix, int a, int b, int n) {
+    for (int i = 0; i < n; i++) {
+        matrix[a][i] |= matrix[b][i];
+        matrix[i][a] = matrix[a][i];
+    }
+    matrix[a][a] = 0;
+}
+
+void mergeVerticesList(int** adjacencyList, int* degrees, int a, int b) {
+    for (int i = 0; i < degrees[b]; i++) {
+        int neighbor = adjacencyList[b][i];
+        int found = 0;
+        for (int j = 0; j < degrees[a]; j++) {
+            if (adjacencyList[a][j] == neighbor) {
+                found = 1;
+                break;
+            }
+        }
+        if (!found && neighbor != a) {
+            adjacencyList[a][degrees[a]++] = neighbor;
+        }
+    }
+    degrees[b] = 0;
+}
+
+void contractEdgeMatrix(int** matrix, int a, int b, int n) {
+    mergeVerticesMatrix(matrix, a, b, n);
+    for (int i = 0; i < n; i++) {
+        matrix[b][i] = 0;
+        matrix[i][b] = 0;
+    }
+}
+
+void contractEdgeList(int** adjacencyList, int* degrees, int a, int b) {
+    mergeVerticesList(adjacencyList, degrees, a, b);
+    degrees[b] = 0;
+}
+
+void splitVertexMatrix(int** matrix, int a, int n) {
+    if (a >= n - 1) {
+        printf("Невозможно расщепить вершину. Недостаточно вершин.\n");
+        return;
+    }
+    int new_vertex = a + 1;
+    for (int i = 0; i < n; i++) {
+        if (matrix[a][i] == 1) {
+            matrix[new_vertex][i] = 1;
+            matrix[i][new_vertex] = 1;
+            matrix[a][i] = 0;
+            matrix[i][a] = 0;
+        }
+    }
+}
+
+void splitVertexList(int** adjacencyList, int* degrees, int a, int n) {
+    if (degrees[a] == 0 || a >= n - 1) return;
+    int new_vertex = a + 1;
+    degrees[new_vertex] = 0;
+    for (int i = 0; i < degrees[a]; i++) {
+        int neighbor = adjacencyList[a][i];
+        adjacencyList[new_vertex][degrees[new_vertex]++] = neighbor;
+    }
+    degrees[a] = 0;
+}
+
+void printAdjacencyMatrixCartesian(int** matrix, int size) {
+    for (int i = 0; i < size; i++) {
+        for (int j = 0; j < size; j++) {
+            printf("%d ", matrix[i][j]);
+        }
+        printf("\n");
+    }
+}
+void deleteVertexMatrix(int** matrix, int vertex, int n) {
+    if (vertex >= n) {
+        printf("Некорректный номер вершины для удаления.\n");
+        return;
+    }
+    for (int i = vertex; i < n - 1; i++) {
+        for (int j = 0; j < n; j++) {
+            matrix[i][j] = matrix[i + 1][j];
+        }
+    }
+    for (int i = 0; i < n; i++) {
+        for (int j = vertex; j < n - 1; j++) {
+            matrix[i][j] = matrix[i][j + 1];
+        }
+    }
+    for (int i = 0; i < n; i++) {
+        matrix[n - 1][i] = 0;
+        matrix[i][n - 1] = 0;
+    }
+}
+
+int main() {
+    setlocale(LC_ALL, "RU");
+    srand(time(NULL));
+
+    int n;
+    printf("Введите размер матрицы: ");
+    scanf_s("%d", &n);
+
+    int** matrix1 = (int**)malloc(n * sizeof(int*));
+    int** matrix2 = (int**)malloc(n * sizeof(int*));
+    int** result = (int**)malloc(n * sizeof(int*));
+    for (int i = 0; i < n; i++) {
+        matrix1[i] = (int*)malloc(n * sizeof(int));
+        matrix2[i] = (int*)malloc(n * sizeof(int));
+        result[i] = (int*)malloc(n * sizeof(int));
+    }
+
+    int** adjacencyList1 = (int**)malloc(n * sizeof(int*));
+    int** adjacencyList2 = (int**)malloc(n * sizeof(int*));
+    int** resultList = (int**)malloc(n * sizeof(int*));
+    for (int i = 0; i < n; i++) {
+        adjacencyList1[i] = (int*)malloc(n * sizeof(int));
+        adjacencyList2[i] = (int*)malloc(n * sizeof(int));
+        resultList[i] = (int*)malloc(n * sizeof(int));
+    }
+
+    int* degrees1 = (int*)malloc(n * sizeof(int));
+    int* degrees2 = (int*)malloc(n * sizeof(int));
+    int* resultDegrees = (int*)malloc(n * sizeof(int));
+
+    generateAdjacencyMatrix(matrix1, n);
+    generateAdjacencyMatrix(matrix2, n);
+
+    printf("Исходная матрица смежности M1:\n");
+    printAdjacencyMatrix(matrix1, n);
+
+    printf("Исходная матрица смежности M2:\n");
+    printAdjacencyMatrix(matrix2, n);
+
+    adjacencyMatrixToList(matrix1, adjacencyList1, degrees1, n);
+    adjacencyMatrixToList(matrix2, adjacencyList2, degrees2, n);
+
+    printf("\nСписок смежности M1:\n");
+    printAdjacencyList(adjacencyList1, degrees1, n);
+
+    printf("\nСписок смежности M2:\n");
+    printAdjacencyList(adjacencyList2, degrees2, n);
+
+    int choice, a, b, graph_choice;
+    do {
+        printf("\nВыберите операцию:\n1 - Объединение графов\n2 - Пересечение графов\n3 - Кольцевая сумма графов\n4 - Декартово произведение графов\n5 - Отождествление вершин\n6 - Стягивание ребра\n7 - Расщепление вершины\n8 - Удаление вершины\n0 - выход\n");
+        scanf_s("%d", &choice);
+        switch (choice) {
+        case 1:
+            unionGraphsMatrix(result, matrix1, matrix2, n);
+            printf("Результат объединения графов (матрица):\n");
+            printAdjacencyMatrix(result, n);
+
+            unionGraphsList(resultList, resultDegrees, adjacencyList1, degrees1, adjacencyList2, degrees2, n);
+            printf("Результат объединения графов (список смежности):\n");
+            printAdjacencyList(resultList, resultDegrees, n);
+            break;
+
+        case 2:
+            intersectionGraphsMatrix(result, matrix1, matrix2, n);
+            printf("Результат пересечения графов (матрица):\n");
+            printAdjacencyMatrix(result, n);
+
+            intersectionGraphsList(resultList, resultDegrees, adjacencyList1, degrees1, adjacencyList2, degrees2, n);
+            printf("Результат пересечения графов (список смежности):\n");
+            printAdjacencyList(resultList, resultDegrees, n);
+            break;
+
+        case 3:
+            ringSumGraphsMatrix(result, matrix1, matrix2, n);
+            printf("Результат кольцевой суммы графов (матрица):\n");
+            printAdjacencyMatrix(result, n);
+
+            ringSumGraphsList(resultList, resultDegrees, adjacencyList1, degrees1, adjacencyList2, degrees2, n);
+            printf("Результат кольцевой суммы графов (список смежности):\n");
+            printAdjacencyList(resultList, resultDegrees, n);
+            break;
+
+        case 4: {
+            int size = n * n;
+            int** resultCartesian = (int**)malloc(size * sizeof(int*));
+            cartesianProductGraphsMatrix(resultCartesian, matrix1, matrix2, n);
+            printf("Результат декартова произведения графов (матрица):\n");
+            printAdjacencyMatrixCartesian(resultCartesian, size);
+            for (int i = 0; i < size; i++) {
+                free(resultCartesian[i]);
+            }
+            free(resultCartesian);
+            break;
+
+        }
+        case 5:
+            printf("Выберите граф (1 для M1, 2 для M2): ");
+            scanf_s("%d", &graph_choice);
+            printf("Введите номера вершин для отождествления (a, b): ");
+            scanf_s("%d %d", &a, &b);
+            if (graph_choice == 1) {
+                mergeVerticesMatrix(matrix1, a, b, n);
+                printf("Матрица смежности M1 после отождествления вершин:\n");
+                printAdjacencyMatrix(matrix1, n);
+
+                mergeVerticesList(adjacencyList1, degrees1, a, b);
+                printf("Список смежности M1 после отождествления вершин:\n");
+                printAdjacencyList(adjacencyList1, degrees1, n);
+                break;
+            }
+            else
+            {
+
+                mergeVerticesMatrix(matrix2, a, b, n);
+                printf("Матрица смежности M2 после отождествления вершин:\n");
+                printAdjacencyMatrix(matrix2, n);
+
+                mergeVerticesList(adjacencyList2, degrees2, a, b);
+                printf("Список смежности M1 после отождествления вершин:\n");
+                printAdjacencyList(adjacencyList2, degrees2, n);
+                break;
+            }
+        case 6:
+            printf("Выберите граф (1 для M1, 2 для M2): ");
+            scanf_s("%d", &graph_choice);
+            printf("Введите номера вершин для стягивания ребра (a, b): ");
+            scanf_s("%d %d", &a, &b);
+            if (graph_choice == 1) {
+                contractEdgeMatrix(matrix1, a, b, n);
+                printf("Матрица смежности M1 после стягивания ребра:\n");
+                printAdjacencyMatrix(matrix1, n);
+
+                contractEdgeList(adjacencyList1, degrees1, a, b);
+                printf("Список смежности M1 после стягивания ребра:\n");
+                printAdjacencyList(adjacencyList1, degrees1, n);
+                break;
+            }
+            else {
+                contractEdgeMatrix(matrix2, a, b, n);
+                printf("Матрица смежности M2 после стягивания ребра:\n");
+                printAdjacencyMatrix(matrix2, n);
+
+                contractEdgeList(adjacencyList2, degrees2, a, b);
+                printf("Список смежности M2 после стягивания ребра:\n");
+                printAdjacencyList(adjacencyList2, degrees2, n);
+                break;
+            }
+
+
+        case 7:
+            printf("Выберите граф (1 для M1, 2 для M2): ");
+            scanf_s("%d", &graph_choice);
+            printf("Введите номер вершины для расщепления: ");
+            scanf_s("%d", &a);
+            if (graph_choice == 1) {
+                splitVertexMatrix(matrix1, a, n);
+                printf("Матрица смежности M1 после расщепления вершины:\n");
+                printAdjacencyMatrix(matrix1, n);
+
+                splitVertexList(adjacencyList1, degrees1, a, n);
+                printf("Список смежности M1 после расщепления вершины:\n");
+                printAdjacencyList(adjacencyList1, degrees1, n);
+                break;
+            }
+            else {
+                splitVertexMatrix(matrix2, a, n);
+                printf("Матрица смежности M2 после расщепления вершины:\n");
+                printAdjacencyMatrix(matrix2, n);
+
+                splitVertexList(adjacencyList2, degrees2, a, n);
+                printf("Список смежности M2 после расщепления вершины:\n");
+                printAdjacencyList(adjacencyList2, degrees2, n);
+                break;
+            }
+        case 8:
+            printf("Выберите граф (1 для M1, 2 для M2): ");
+            scanf_s("%d", &graph_choice);
+            printf("Введите номер вершины для расщепления: ");
+            scanf_s("%d", &a);
+            if (graph_choice == 1) {
+                deleteVertexMatrix(matrix1, a, n);
+                printf("Матрица смежности M1 после удаления вершины:\n");
+                printAdjacencyMatrix(matrix1, n);
+
+                splitVertexList(adjacencyList1, degrees1, a, n);
+                printf("Список смежности M1 после удаления вершины:\n");
+                printAdjacencyList(adjacencyList1, degrees1, n);
+                break;
+            }
+            else {
+                deleteVertexMatrix(matrix2, a, n);
+                printf("Матрица смежности M2 после удаления вершины:\n");
+                printAdjacencyMatrix(matrix2, n);
+
+                splitVertexList(adjacencyList2, degrees2, a, n);
+                printf("Список смежности M1 после удаления вершины:\n");
+                printAdjacencyList(adjacencyList2, degrees2, n);
+                break;
+            }
+        case 0:
+            printf("Выход из программы.\n");
+            break;
+
+        default:
+            printf("Неправильный ввод. Попробуйте снова.\n");
+        }
+        } while (choice != 0);
+
+        for (int i = 0; i < n; i++) {
+            free(matrix1[i]);
+            free(matrix2[i]);
+            free(result[i]);
+            free(adjacencyList1[i]);
+            free(adjacencyList2[i]);
+            free(resultList[i]);
+        }
+        free(matrix1);
+        free(matrix2);
+        free(result);
+        free(adjacencyList1);
+        free(adjacencyList2);
+        free(resultList);
+        free(degrees1);
+        free(degrees2);
+        free(resultDegrees);
+
+        return 0;
+    }
