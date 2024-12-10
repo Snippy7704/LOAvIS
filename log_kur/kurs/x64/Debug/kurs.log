@@ -1,0 +1,8 @@
+﻿  main.cpp
+D:\C++\log_kur\kurs\main.cpp(17,16): warning C4267: инициализация: преобразование из "size_t" в "int"; возможна потеря данных
+D:\C++\log_kur\kurs\main.cpp(18,17): warning C4267: инициализация: преобразование из "size_t" в "int"; возможна потеря данных
+D:\C++\log_kur\kurs\main.cpp(19,17): warning C4267: инициализация: преобразование из "size_t" в "int"; возможна потеря данных
+D:\C++\log_kur\kurs\main.cpp(21,9): warning C4101: x: неиспользованная локальная переменная
+D:\C++\log_kur\kurs\main.cpp(72,16): warning C4267: инициализация: преобразование из "size_t" в "int"; возможна потеря данных
+D:\C++\log_kur\kurs\main.cpp(154,15): warning C4244: аргумент: преобразование "time_t" в "unsigned int", возможна потеря данных
+  kurs.vcxproj -> D:\C++\log_kur\kurs\x64\Debug\kurs.exe
